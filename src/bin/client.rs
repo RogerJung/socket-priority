@@ -44,7 +44,7 @@ fn main() -> Result<()> {
         let elapsed = since.elapsed();
         if elapsed >= Duration::from_secs(1) {
             let rate = acc as f64 * 8.0 / 1_000_000_000.0 / elapsed.as_secs_f64();
-            eprintln!("{rate:.3} Gbits");
+            println!("{rate:.3} Gbits");
 
             since = Instant::now();
             acc = 0;
