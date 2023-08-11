@@ -9,9 +9,10 @@ use std::time::{Duration, Instant};
 
 #[derive(Debug, Clone, Parser)]
 struct Opts {
-    #[clap(long, default_value = "0.0.0.0:55555")]
+    #[clap(short = 'l', long, default_value = "0.0.0.0:55555")]
     pub listen_addr: SocketAddr,
-    #[clap(long)]
+
+    #[clap(short = 'p', long)]
     pub priority: i32,
 }
 

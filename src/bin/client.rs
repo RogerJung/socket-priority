@@ -9,13 +9,13 @@ use std::time::{Duration, Instant};
 
 #[derive(Debug, Clone, Parser)]
 struct Opts {
-    #[clap(long, default_value = "127.0.0.1:55555")]
+    #[clap(short = 'c', long, default_value = "127.0.0.1:55555")]
     pub connect_addr: SocketAddr,
 
-    #[clap(long)]
+    #[clap(short = 'p', long)]
     pub priority: i32,
 
-    #[clap(long)]
+    #[clap(short = 's', long)]
     pub payload_size: usize,
 }
 
