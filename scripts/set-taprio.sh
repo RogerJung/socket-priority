@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
-sudo tc qdisc replace dev enp1s0 parent root handle 100 taprio \
+set -e
+
+dev="$1"
+shift || {
+    echo "Usage: $0 <DEVICE>" >&2
+    exit 1
+}
+
+sudo tc qdisc replace dev "$dev" parent root handle 100 taprio \
      num_tc 3 \
      map 0 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 \
      queues 1@0 1@1 1@2 \
