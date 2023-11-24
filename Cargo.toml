@@ -8,4 +8,8 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.69"
 clap = { version = "4.1.4", features = ["derive"] }
+deku = "0.16.0"
+itertools = "0.12.0"
+net2 = "0.2.39"
 nix = { version = "0.26.2", features = ["socket"] }
+socket2 = "0.5.5"
