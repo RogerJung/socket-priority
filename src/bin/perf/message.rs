@@ -1,5 +1,6 @@
 use deku::prelude::*;
 
+/// The message sent from the client to the server.
 #[derive(Debug, Clone, DekuRead, DekuWrite)]
 pub struct Request {
     #[deku(bits = 64, endian = "little")]
@@ -14,6 +15,7 @@ pub struct Request {
     pub priorities: Vec<i32>,
 }
 
+/// The message replied from the server to the client.
 #[derive(Debug, Clone, DekuRead, DekuWrite)]
 #[deku(type = "u8")]
 pub enum Response {

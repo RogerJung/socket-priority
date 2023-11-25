@@ -22,12 +22,17 @@ pub fn run(
     count: usize,
     period: Duration,
 ) -> Result<()> {
-    ensure!(!priorities.is_empty());
+    ensure!(
+        !priorities.is_empty(),
+        "Empty list of priorities is not allowed"
+    );
 
+    // Create a TCP socket.
     let mut stream = TcpStream::connect(base_addr)?;
 
     // Send a request
     {
+        // Construct the request message.
         let request = Request {
             payload_size,
             period_millis: period.as_millis() as u64,
@@ -35,16 +40,23 @@ pub fn run(
             num_priorities: priorities.len(),
             priorities: priorities.to_vec(),
         };
+
+        // Serialize the request and count the size.
         let request_buf = request.to_bytes()?;
         let len = request_buf.len() as u32;
+
+        // Write the length and then write the request.
         stream.write_all(&len.to_le_bytes())?;
         stream.write_all(&request_buf)?;
     }
 
     // Wait for a response
     {
+        // Read response bytes.
         let mut respones_buf = [0u8];
         stream.read_exact(&mut respones_buf)?;
+
+        // Deserialize the bytes.
         let (_, response) = Response::from_bytes((&respones_buf, 0))?;
 
         match response {
@@ -55,11 +67,13 @@ pub fn run(
         }
     }
 
+    // Close the connection to the server.
     drop(stream);
 
-    // Create TCP sockets
-    let addrs = socket_addr_range(next_addr(base_addr)?, priorities.len() as u16)?;
+    // List ports to be used.
+    let addrs: Vec<SocketAddr> = socket_addr_range(next_addr(base_addr)?, priorities.len() as u16)?;
 
+    // Create TCP sockets
     let sockets: Vec<_> = izip!(addrs, priorities)
         .map(|(addr, &priority)| create_socket(addr, priority))
         .try_collect()?;
@@ -89,20 +103,28 @@ fn run_ping(
     period: Duration,
 ) -> Result<()> {
     let peer_addr = stream.peer_addr()?;
-    let mut round_trip_times: Vec<Duration> = Vec::new();
+
+    // The buffer is used in both writing and reading.
     let mut buf = vec![0u8; payload_size];
 
+    // Recorded RTTs per round.
+    let mut round_trip_times: Vec<Duration> = vec![];
+
     let start = Instant::now();
+
+    // Generate an iterator of ticks (1, time1), (2, time2), ...
+    // Each timeX is the starting time of each round.
     let ticks = create_ticks(start, period, count);
 
     for (nth, when) in ticks {
+        // Sleep until the next round starts.
         sleep_until(when);
 
         let now = Instant::now();
 
         // Send a ping
         {
-            // Record the sending time
+            // Record the sending time at the beginning of the buffer.
             let send_time = now - start;
             let send_time_bytes = send_time.as_micros().to_le_bytes();
             buf[0..mem::size_of::<u128>()].copy_from_slice(&send_time_bytes);
@@ -113,17 +135,13 @@ fn run_ping(
         {
             // Read bytes from the server
             stream.read_exact(&mut buf)?;
+
+            // Record the receiving time.
             let receive_time = Instant::now() - start;
 
-            //println!("received_time_bytes: {received_time_bytes:?}", received_time_bytes = received_time_bytes);
+            // Extract the sending time from the payload.
             let duration_micros = u128::from_le_bytes(buf[..16].try_into().unwrap());
-            //println!("duration_value: {duration_value:?}", duration_value = duration_value as u64);
             let send_time = Duration::from_micros(duration_micros as u64);
-
-            // let send_time_seconds = send_time.as_secs_f64(); // 轉換為秒
-            //println!("Send Time in Seconds: {:.6}", send_time_seconds); // 格式化為小數點後 6 位的浮點數
-            //println!("send_time: {send_time:?}", send_time = send_time);
-            //let round_trip_time=(receive_time-send_time).as_micros();
 
             // Record the round-trip time
             let round_trip_time = receive_time - send_time;
@@ -131,6 +149,7 @@ fn run_ping(
             println!(
                 "{payload_size} bytes from {peer_addr}: \
                       seq={nth} \
+                      priority={priority} \
                       time={round_trip_time:?}"
             );
         }

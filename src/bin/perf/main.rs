@@ -12,6 +12,7 @@ use clap::Parser;
 use std::time::Duration;
 
 fn main() -> Result<()> {
+    // Parse command-line arguments.
     let args = Args::parse();
 
     match args {

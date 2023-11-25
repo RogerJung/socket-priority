@@ -76,12 +76,15 @@ fn run_pong(
 
     println!("Accepted {peer_addr:?} for priority {priority}");
 
-    // loop
+    // Create a counter iterator 1, 2, ... up to `count`.
     let counter = create_counter(count);
     let mut reply_buf = vec![0u8; payload_size];
 
     for nth in counter {
+        // Receive the ping
         stream.read_exact(&mut reply_buf)?;
+
+        // Reply the pong back
         stream.write_all(&reply_buf)?;
         println!("{payload_size} bytes from {peer_addr}: seq={nth}");
     }
