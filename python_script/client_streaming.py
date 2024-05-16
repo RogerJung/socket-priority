@@ -2,7 +2,7 @@ import socket
 import time
 import argparse
 
-SERVER_HOST = '192.168.1.1'
+SERVER_HOST = '192.168.225.72'
 BUFFER_SIZE = 1024
 # DATA_SIZE = 100 * 1024 * 1024  # 100 MB of data
 
@@ -19,6 +19,9 @@ def send_data(client_socket):
     while True:
         data_sent = client_socket.send(data)
         total_data_sent += data_sent
+        if total_data_sent > 6000000:
+            # time.sleep(0.3)
+            total_data_sent = 0
 
     client_socket.shutdown(socket.SHUT_WR)
 

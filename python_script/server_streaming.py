@@ -2,7 +2,7 @@ import socket
 import time
 import argparse
 
-SERVER_HOST = '192.168.1.1'
+SERVER_HOST = '192.168.1.103'
 BUFFER_SIZE = 1024
 
 FRAME_SIZE = 6000000
@@ -14,27 +14,26 @@ args = parser.parse_args()
 
 
 def handle_client(client_socket):
-    total_data = 0
-    start_time = time.time()
-    while True:
-    	data = client_socket.recv(BUFFER_SIZE)
-    	if not data:
-    	    break
-    	total_data += len(data)
+	total_data = 0
+	start_time = time.time()
+	while True:
+		data = client_socket.recv(BUFFER_SIZE)
+		if not data:
+			break
+		total_data += len(data)
     	
-    	if total_data > FRAME_SIZE:
+		if total_data > FRAME_SIZE:
+			end_time = time.time()
+			total_time = end_time - start_time
+			bandwidth = total_data / total_time / 1024 / 1024  # Bandwidth in MB/s
+			latency = total_time * 1000  # Latency in milliseconds
 
-    	    end_time = time.time()
-    	    total_time = end_time - start_time
-    	    bandwidth = total_data / total_time / 1024 / 1024  # Bandwidth in MB/s
-    	    latency = total_time * 1000  # Latency in milliseconds
+			print(f"Bandwidth: {bandwidth:.2f} MB/s")
+			print(f"Latency: {latency:.2f} ms")
+			total_data = 0
+			start_time = time.time()
 
-    	    print(f"Bandwidth: {bandwidth:.2f} MB/s")
-    	    print(f"Latency: {latency:.2f} ms")
-    	    total_data = 0
-    	    start_time = time.time()
-
-    client_socket.close()
+	client_socket.close()
 
 def start_server(args):
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
