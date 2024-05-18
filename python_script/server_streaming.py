@@ -5,11 +5,11 @@ import argparse
 SERVER_HOST = '192.168.1.103'
 BUFFER_SIZE = 1024
 
-FRAME_SIZE = 6000000
 
 parser = argparse.ArgumentParser(description="Socket Server with Python.")
 
 parser.add_argument("--port", "-p", type=int, required=True)
+parser.add_argument("--size", "-s", type=int, required=True)
 args = parser.parse_args()
 
 
@@ -22,7 +22,7 @@ def handle_client(client_socket):
 			break
 		total_data += len(data)
     	
-		if total_data > FRAME_SIZE:
+		if total_data > args.size:
 			end_time = time.time()
 			total_time = end_time - start_time
 			bandwidth = total_data / total_time / 1024 / 1024  # Bandwidth in MB/s
