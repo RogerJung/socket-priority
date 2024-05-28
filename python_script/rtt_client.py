@@ -12,17 +12,17 @@ parser.add_argument("--priority", "-i", type=int, required=True)
 args = parser.parse_args()
 
 def measure_rtt(message, timeout=2):
-    try:
-        # Create a TCP/IP socket
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # sock.setsockopt(socket.SOL_SOCKET, socket.SO_PRIORITY, args.priority)
-        sock.settimeout(timeout)
+    while True:
+        try:
+            # Create a TCP/IP socket
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            # sock.setsockopt(socket.SOL_SOCKET, socket.SO_PRIORITY, args.priority)
+            sock.settimeout(timeout)
 
-        # Connect the socket to the server
-        sock.connect((HOST, args.port))
+            # Connect the socket to the server
+            sock.connect((HOST, args.port))
 
-        # Send data
-        while True:
+            # Send data
             start_time = time.time()
             sock.sendall(message.encode())
 
@@ -35,12 +35,12 @@ def measure_rtt(message, timeout=2):
             rtt *= 1000
             print(f"Received: {data.decode()}")
             print(f"Round Trip Time (RTT): {rtt:.0f} ms")
-            time.sleep(0.1)
 
-    except socket.timeout:
-        print("Request timed out.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+        except socket.timeout:
+            print("Request timed out.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+        time.sleep(0.1)
 
 if __name__ == "__main__":
     message = "ping"    # Message to send to the server

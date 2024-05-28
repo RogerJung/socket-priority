@@ -21,11 +21,11 @@ def start_server():
     server_socket.listen(1)
     print(f"Server listening on {HOST}:{args.port}")
 
-    # Wait for a connection
-    client_socket, client_address = server_socket.accept()
-    try:
-        print(f"Connection from {client_address}")
-        while True:
+    while True:
+        # Wait for a connection
+        client_socket, client_address = server_socket.accept()
+        try:
+            print(f"Connection from {client_address}")
             # Receive the data
             data = client_socket.recv(1024)
             print(f"Received: {data.decode()}")
@@ -34,9 +34,9 @@ def start_server():
             client_socket.sendall(data)
             print("Sent back the data")
 
-    finally:
-        # Clean up the connection
-        client_socket.close()
+        finally:
+            # Clean up the connection
+            client_socket.close()
 
 if __name__ == "__main__":
     start_server()
