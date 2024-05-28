@@ -1,7 +1,9 @@
 import socket
 import argparse
+import os
 
-HOST='192.168.225.73'
+#TODO: 改成用吃環境變數的方式
+HOST=os.getenv('SERVER_IP')
 
 parser = argparse.ArgumentParser(description="Socket Server with Python.")
 
@@ -19,12 +21,11 @@ def start_server():
     server_socket.listen(1)
     print(f"Server listening on {HOST}:{args.port}")
 
-    while True:
-        # Wait for a connection
-        client_socket, client_address = server_socket.accept()
-        try:
-            print(f"Connection from {client_address}")
-
+    # Wait for a connection
+    client_socket, client_address = server_socket.accept()
+    try:
+        print(f"Connection from {client_address}")
+        while True:
             # Receive the data
             data = client_socket.recv(1024)
             print(f"Received: {data.decode()}")
@@ -33,9 +34,9 @@ def start_server():
             client_socket.sendall(data)
             print("Sent back the data")
 
-        finally:
-            # Clean up the connection
-            client_socket.close()
+    finally:
+        # Clean up the connection
+        client_socket.close()
 
 if __name__ == "__main__":
     start_server()

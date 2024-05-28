@@ -1,8 +1,9 @@
 import socket
 import time
 import argparse
+import os
 
-HOST='192.168.225.73'
+HOST=os.getenv('SERVER_IP')
 
 parser = argparse.ArgumentParser(description="Socket Client with Python.")
 
@@ -11,17 +12,17 @@ parser.add_argument("--priority", "-i", type=int, required=True)
 args = parser.parse_args()
 
 def measure_rtt(message, timeout=2):
-    while True:
-        try:
-            # Create a TCP/IP socket
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            # sock.setsockopt(socket.SOL_SOCKET, socket.SO_PRIORITY, args.priority)
-            sock.settimeout(timeout)
+    try:
+        # Create a TCP/IP socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # sock.setsockopt(socket.SOL_SOCKET, socket.SO_PRIORITY, args.priority)
+        sock.settimeout(timeout)
 
-            # Connect the socket to the server
-            sock.connect((HOST, args.port))
+        # Connect the socket to the server
+        sock.connect((HOST, args.port))
 
-            # Send data
+        # Send data
+        while True:
             start_time = time.time()
             sock.sendall(message.encode())
 
@@ -34,12 +35,12 @@ def measure_rtt(message, timeout=2):
             rtt *= 1000
             print(f"Received: {data.decode()}")
             print(f"Round Trip Time (RTT): {rtt:.0f} ms")
+            time.sleep(0.1)
 
-        except socket.timeout:
-            print("Request timed out.")
-        except Exception as e:
-            print(f"An error occurred: {e}")
-        time.sleep(0.1)
+    except socket.timeout:
+        print("Request timed out.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     message = "ping"    # Message to send to the server

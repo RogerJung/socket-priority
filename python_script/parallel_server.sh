@@ -14,11 +14,13 @@ shift 2
 # 8002 -> 250000
 # 8003 -> 500000
 
+source env.sh
+
 commands=(
-    "python3 server_streaming.py -p 8000 -s 10000 > ${output}/0.txt"
-    "python3 server_streaming.py -p 8001 -s 10000 > ${output}/1.txt"
-    "python3 server_streaming.py -p 8002 -s 10000 > ${output}/2.txt"
-    "python3 server_streaming.py -p 8003 -s 10000 > ${output}/3.txt"
+    "python3 server_streaming.py -p 8000 -s 500000 > ${output}/0.txt"
+    "python3 server_streaming.py -p 8001 -s 500000 > ${output}/1.txt"
+    "python3 server_streaming.py -p 8002 -s 500000 > ${output}/2.txt"
+    "python3 server_streaming.py -p 8003 -s 500000 > ${output}/3.txt"
 )
 
 parallel ::: "${commands[@]}"

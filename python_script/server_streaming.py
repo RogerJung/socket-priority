@@ -1,8 +1,9 @@
 import socket
 import time
 import argparse
+import os
 
-SERVER_HOST = '192.168.1.103'
+SERVER_HOST = os.getenv('SERVER_IP')
 BUFFER_SIZE = 1024
 
 
